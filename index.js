@@ -34,7 +34,6 @@ title: ${title}
 body: ${body}
 The following diff is the changes made in this PR.
 ${diff}`;
-  core.info(`The prompt is: ${prompt}`);
   return prompt;
 }
 
@@ -68,10 +67,9 @@ async function run() {
           format: "diff",
         },
       });
-      const response = await callChatGPT(
-        api,
-        genReviewPRPrompt(title, body, diff)
-      );
+      const prompt = genReviewPRPrompt(title, body, diff);
+      core.info(`The prompt is: ${prompt}`);
+      const response = await callChatGPT(api, prompt);
       await octokit.issues.createComment({
         ...context.repo,
         issue_number: number,
