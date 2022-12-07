@@ -30,7 +30,7 @@
     "chatgpt": "^2.0.1"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.31.1",
+    "@vercel/ncc": "^0.36.0",
     "eslint": "^8.0.0",
     "jest": "^27.2.5"
   }
