@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: ChatGPT comment
-        uses: kxxt/chatgpt-action
+        uses: kxxt/chatgpt-action@HEAD
         id: chatgpt
         with:
           number: ${{ github.event.pull_request.number }}
