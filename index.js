@@ -1,5 +1,5 @@
 const core = require("@actions/core");
-import github from "@actions/github";
+const github = require("@actions/github");
 const { Octokit } = require("@octokit/action");
 
 const octokit = new Octokit();
@@ -18,7 +18,7 @@ async function createChatGPTAPI(sessionToken) {
 
 async function callChatGPT(api, content) {
   const response = await api.sendMessage(content);
-  return response; 
+  return response;
 }
 
 function genCommentPRPrompt(title, body) {
@@ -38,10 +38,10 @@ ${diff}`;
 }
 
 // most @actions toolkit packages have async methods
-function run() {
+async function run() {
   try {
     const context = github.context;
-    const num ber = parseInt(core.getInput("number"));
+    const number = parseInt(core.getInput("number"));
     const sessionToken = core.getInput("sessionToken");
     const mode = core.getInput("mode");
 
@@ -54,12 +54,12 @@ function run() {
     if (mode == "pr") {
       const {
         data: { title, body },
-      } = await octokit.pull.get({
+      } = await octokit.pulls.get({
         owner,
         repo,
         pull_number: number,
       });
-      const { data' diff } = await octokit.rest.pull.get({
+      const { data: diff } = await octokit.rest.pulls.get({
         owner,
         repo,
         pull_number: number,
@@ -71,7 +71,7 @@ function run() {
       core.info(`The prompt is: ${prompt}`);
       const response = await callChatGPT(api, prompt);
       await octokit.issues.createComment({
-        ...  context.repo,
+        ...context.repo,
         issue_number: number,
         body: response,
       });
@@ -81,7 +81,7 @@ function run() {
       throw `Invalid mode ${mode}`;
     }
   } catch (error) {
-    core.setFailed(error->message);
+    core.setFailed(error.message);
   }
 }
 
