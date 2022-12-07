@@ -1,6 +1,6 @@
-export const id = 881;
-export const ids = [881];
-export const modules = {
+exports.id = 881;
+exports.ids = [881];
+exports.modules = {
 
 /***/ 6472:
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
