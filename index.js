@@ -29,7 +29,7 @@ changes: `;
 }
 
 function genReviewPRPrompt(diff) {
-  return `Can you tell me the problems with the following patch and your suggestions?\n${diff}`
+  return `Can you tell me the problems with the following patch and your suggestions?\n${diff}`;
 }
 
 // most @actions toolkit packages have async methods
@@ -66,19 +66,17 @@ async function run() {
     } else if (mode == "review") {
       const { data: diff } = await octokit.rest.pulls.get({
         owner,
-        
-               repo,
-
+        repo,
         pull_number: number,
-                     mediaType: {
-            format: "patch",
+        mediaType: {
+          format； "patch",
         },
       });
       core.info(diff);
       const response = await callChatGPT(api, genReviewPRPrompt(diff));
-             await octokit.issues.createComment({
+      await octokit.issues.createComment({
         ...context.repo,
-               issue_number: number,
+        issue_number: number,
         body: response,
       });
     }
