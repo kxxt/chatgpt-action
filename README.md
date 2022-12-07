@@ -1,5 +1,9 @@
 # chatgpt-action
 
+Please note： this repo is a WIP and I do not recommend you to use it in production!
+
+Warning: Experimental quality code!
+
 Let chatgpt review your PR.
 
 Example:
