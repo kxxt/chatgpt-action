@@ -13913,6 +13913,10 @@ body: ${body}
 changes: `;
 }
 
+function genReviewPRPrompt(diff) {
+  return `Can you tell me the problems with the following patch and your suggestions?\n${diff}`
+}
+
 // most @actions toolkit packages have async methods
 async function run() {
   try {
@@ -13954,6 +13958,12 @@ async function run() {
         },
       });
       core.info(diff);
+      const response = await callChatGPT(api, genReviewPRPrompt(diff));
+      await octokit.issues.createComment({
+        ...context.repo,
+        issue_number: number,
+        body: response,
+      });
     }
   } catch (error) {
     core.setFailed(error.message);
