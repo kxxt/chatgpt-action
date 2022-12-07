@@ -15,7 +15,7 @@ jobs:
         uses: ./ # Uses an action in the root directory
         id: hello
         with:
-          pr: ${{ github.event.pull_request.number }}
+          number: ${{ github.event.pull_request.number }}
           sessionToken: ${{ secrets.CHATGPT_SESSION_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get the output from ChatGPT
