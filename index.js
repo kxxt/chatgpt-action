@@ -22,9 +22,9 @@ async function callChatGPT(api, content) {
 }
 
 function genCommentPRPrompt(title, body) {
-  return `Please comment on the following pull request:\n
-PR title: ${title}
-PR body: ${body}`;
+  return `Here is a pull request, please comment:\n
+title: ${title}
+body: ${body}`;
 }
 
 // most @actions toolkit packages have async methods
