@@ -1,18 +1,22 @@
 # chatgpt-action
 
-Please note： this repo is a WIP and I do not recommend you to use it in production!
-
-Warning: Experimental quality code!
-
 Let chatgpt review your PR.
 
-Showcase:
+Please note： this repo is a WIP and I do not recommend you to use it in production!
+
+## Warning
+
+- code of experimental quality!
+- ChatGPT often generates misleading comments which could confuse your contributors and that's
+one reason against using this action in production.
+
+## Showcase
 
 - https://github.com/kxxt/chatgpt-action/pull/12
 - https://github.com/kxxt/chatgpt-action/pull/10
 - https://github.com/kxxt/chatgpt-action/pull/9
 
-Example:
+## Usage
 
 ```yaml
 on: [pull_request]
