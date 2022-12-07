@@ -29,11 +29,13 @@ changes: `;
 }
 
 function genReviewPRPrompt(title, body, diff) {
-  return `Can you tell me the problems with the following pull request and your suggestions?
+  const prompt = `Can you tell me the problems with the following pull request and your suggestions?
 title: ${title}
 body: ${body}
 The following diff is the changes made in this PR.
 ${diff}`;
+  core.info(`The prompt is: ${prompt}`);
+  return prompt;
 }
 
 // most @actions toolkit packages have async methods
@@ -68,6 +70,13 @@ async function run() {
       });
     } else if (mode == "issue") {
     } else if (mode == "review") {
+      const {
+        data: { title, body },
+      } = await octokit.pulls.get({
+        owner,
+        repo,
+        pull_number: number,
+      });
       const { data: diff } = await octokit.rest.pulls.get({
         owner,
         repo,
@@ -77,7 +86,10 @@ async function run() {
         },
       });
       core.info(diff);
-      const response = await callChatGPT(api, genReviewPRPrompt(diff));
+      const response = await callChatGPT(
+        api,
+        genReviewPRPrompt(title, body, diff)
+      );
       await octokit.issues.createComment({
         ...context.repo,
         issue_number: number,
