@@ -17,6 +17,7 @@ jobs:
         with:
           pr: ${{ github.event.pull_request.number }}
           sessionToken: ${{ secrets.CHATGPT_SESSION_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Get the output from ChatGPT
         run: echo "ChatGPT commented, ${{ steps.hello.outputs.comment }}"
 
