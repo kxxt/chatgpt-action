@@ -18,10 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Let chatgpt comment on your PR.
     steps:
-      # To use this repository's private action,
-      # you must check out the repository
-      - name: Checkout
-        uses: actions/checkout@v3
       - name: ChatGPT comment
         uses: kxxt/chatgpt-action@HEAD
         id: chatgpt
