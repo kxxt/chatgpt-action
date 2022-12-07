@@ -68,7 +68,6 @@ async function run() {
           format: "diff",
         },
       });
-      core.info(diff);
       const response = await callChatGPT(
         api,
         genReviewPRPrompt(title, body, diff)
