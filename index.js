@@ -60,23 +60,6 @@ async function run() {
         repo,
         pull_number: number,
       });
-      const response = await callChatGPT(api, genCommentPRPrompt(title, body));
-      core.setOutput("comment", response);
-
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: number,
-        body: response,
-      });
-    } else if (mode == "issue") {
-    } else if (mode == "review") {
-      const {
-        data: { title, body },
-      } = await octokit.pulls.get({
-        owner,
-        repo,
-        pull_number: number,
-      });
       const { data: diff } = await octokit.rest.pulls.get({
         owner,
         repo,
@@ -95,6 +78,10 @@ async function run() {
         issue_number: number,
         body: response,
       });
+    } else if (mode == "issue") {
+      throw "Not implemented!";
+    } else {
+      throw `Invalid mode ${mode}`;
     }
   } catch (error) {
     core.setFailed(error.message);
