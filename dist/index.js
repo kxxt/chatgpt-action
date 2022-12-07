@@ -13945,15 +13945,15 @@ async function run() {
       });
     } else if (mode == "issue") {
     } else if (mode == "review") {
-      const patch = await octokit.request(
-        "GET /{owner}/{repo}/pull/{number}.patch",
-        {
-          owner,
-          repo,
-          number,
-        }
-      );
-      core.info(patch);
+      const { data: diff } = await octokit.rest.pulls.get({
+        owner,
+        repo,
+        pull_number: number,
+        mediaType: {
+          format: "patch",
+        },
+      });
+      core.info(diff);
     }
   } catch (error) {
     core.setFailed(error.message);
