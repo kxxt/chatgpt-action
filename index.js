@@ -1,4 +1,5 @@
 const core = require("@actions/core");
+const github = require("@actions/github");
 const { Octokit } = require("@octokit/action");
 
 const octokit = new Octokit();
@@ -29,6 +30,7 @@ PR body: ${body}`;
 // most @actions toolkit packages have async methods
 async function run() {
   try {
+    const context = github.context;
     const pr = parseInt(core.getInput("pr"));
     const sessionToken = core.getInput("sessionToken");
 
@@ -48,6 +50,12 @@ async function run() {
 
     const response = await callChatGPT(api, genCommentPRPrompt(title, body));
     core.setOutput("comment", response);
+
+    await octokit.issues.createComment({
+      ...context.repo,
+      issue_number: pr,
+      body: response,
+    });
   } catch (error) {
     core.setFailed(error.message);
   }

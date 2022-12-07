@@ -10927,6 +10927,14 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 716:
+/***/ ((module) => {
+
+module.exports = eval("require")("@actions/github");
+
+
+/***/ }),
+
 /***/ 2877:
 /***/ ((module) => {
 
@@ -11302,6 +11310,7 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 const core = __nccwpck_require__(2186);
+const github = __nccwpck_require__(716);
 const { Octokit } = __nccwpck_require__(1231);
 
 const octokit = new Octokit();
@@ -11323,9 +11332,16 @@ async function callChatGPT(api, content) {
   return response;
 }
 
+function genCommentPRPrompt(title, body) {
+  return `Please comment on the following pull request:\n
+PR title: ${title}
+PR body: ${body}`;
+}
+
 // most @actions toolkit packages have async methods
 async function run() {
   try {
+    const context = github.context;
     const pr = parseInt(core.getInput("pr"));
     const sessionToken = core.getInput("sessionToken");
 
@@ -11343,8 +11359,14 @@ async function run() {
     // Create ChatGPT API
     const api = await createChatGPTAPI(sessionToken);
 
-    const response = await callChatGPT(api, "Hi, can you hear me?");
+    const response = await callChatGPT(api, genCommentPRPrompt(title, body));
     core.setOutput("comment", response);
+
+    await octokit.issues.createComment({
+      ...context.repo,
+      issue_number: pr,
+      body: response,
+    });
   } catch (error) {
     core.setFailed(error.message);
   }
