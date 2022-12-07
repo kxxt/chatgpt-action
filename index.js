@@ -20,6 +20,12 @@ async function callChatGPT(api, content) {
   return response;
 }
 
+function genCommentPRPrompt(title, body) {
+  return `Please comment on the following pull request:\n
+PR title: ${title}
+PR body: ${body}`;
+}
+
 // most @actions toolkit packages have async methods
 async function run() {
   try {
@@ -40,7 +46,7 @@ async function run() {
     // Create ChatGPT API
     const api = await createChatGPTAPI(sessionToken);
 
-    const response = await callChatGPT(api, "Hi, can you hear me?");
+    const response = await callChatGPT(api, genCommentPRPrompt(title, body));
     core.setOutput("comment", response);
   } catch (error) {
     core.setFailed(error.message);
