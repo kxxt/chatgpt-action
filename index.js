@@ -1,10 +1,12 @@
-import core from "@actions/core";
-import { Octokit } from "@octokit/action";
-import { ChatGPTAPI } from "chatgpt";
+const core = require("@actions/core");
+const { Octokit } = require("@octokit/action");
 
 const octokit = new Octokit();
 
 async function createChatGPTAPI(sessionToken) {
+  // To use ESM in CommonJS, you can use a dynamic import
+  const { ChatGPTAPI } = await import("chatgpt");
+
   const api = new ChatGPTAPI({ sessionToken });
 
   // ensure the API is properly authenticated
