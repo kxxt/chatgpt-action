@@ -10,7 +10,7 @@ inputs:
   mode:
     description: 'Mode'
     required: true
-    default: 'review'
+    default: 'pr'
 outputs:
   comment:
     description: 'The comment from chatgpt.'
