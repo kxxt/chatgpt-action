@@ -1,4 +1,5 @@
 const core = require("@actions/core");
+const github = require("@actions/github");
 const { Octokit } = require("@octokit/action");
 
 const octokit = new Octokit();
@@ -20,28 +21,55 @@ async function callChatGPT(api, content) {
   return response;
 }
 
+function genCommentPRPrompt(title, body) {
+  return `Here is a pull request, please comment:\n
+title: ${title}
+body: ${body}
+changes: `;
+}
+
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const pr = parseInt(core.getInput("pr"));
+    const context = github.context;
+    const number = parseInt(core.getInput("number"));
     const sessionToken = core.getInput("sessionToken");
+    const mode = core.getInput("mode");
 
     // Read PR title and body
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
-    const {
-      data: { title, body },
-    } = await octokit.pulls.get({
-      owner,
-      repo,
-      pull_number: pr,
-    });
-    core.info(`title: ${title}`);
-    core.info(`body:  ${body}`);
+
     // Create ChatGPT API
     const api = await createChatGPTAPI(sessionToken);
 
-    const response = await callChatGPT(api, "Hi, can you hear me?");
-    core.setOutput("comment", response);
+    if (mode == "pr") {
+      const {
+        data: { title, body },
+      } = await octokit.pulls.get({
+        owner,
+        repo,
+        pull_number: number,
+      });
+      const response = await callChatGPT(api, genCommentPRPrompt(title, body));
+      core.setOutput("comment", response);
+
+      await octokit.issues.createComment({
+        ...context.repo,
+        issue_number: number,
+        body: response,
+      });
+    } else if (mode == "issue") {
+    } else if (mode == "review") {
+      const { data: diff } = await octokit.rest.pulls.get({
+        owner,
+        repo,
+        pull_number: number,
+        mediaType: {
+          format: "patch",
+        },
+      });
+      core.info(diff);
+    }
   } catch (error) {
     core.setFailed(error.message);
   }
