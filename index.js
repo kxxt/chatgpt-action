@@ -41,7 +41,7 @@ async function run() {
   try {
     const context = github.context;
     const number = parseInt(core.getInput("number"));
-    const sessionToken = core.getInput("sessionToken");
+    const sessionToken  = core.getInput("sessionToken");
     const mode = core.getInput("mode");
 
     // Read PR title and body
