@@ -6,6 +6,12 @@ Warning: Experimental quality code!
 
 Let chatgpt review your PR.
 
+Showcase:
+
+- https://github.com/kxxt/chatgpt-action/pull/12
+- https://github.com/kxxt/chatgpt-action/pull/10
+- https://github.com/kxxt/chatgpt-action/pull/9
+
 Example:
 
 ```yaml
