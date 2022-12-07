@@ -1,5 +1,7 @@
 on: [pull_request]
 
+name: Test ChatGPT
+
 jobs:
   chatgpt_comment:
     runs-on: ubuntu-latest
@@ -15,7 +17,6 @@ jobs:
         with:
           pr: ${{ github.event.pull_request.number }}
           sessionToken: ${{ secrets.CHATGPT_SESSION_TOKEN }}
-      # Use the output from the `hello` step
-      - name: Get the output time
-        run: echo "The time was ${{ steps.hello.outputs.time }}"
+      - name: Get the output from ChatGPT
+        run: echo "ChatGPT commented, ${{ steps.hello.outputs.comment }}"
 
