@@ -9,6 +9,8 @@ Please note： this repo is a WIP and I do not recommend you to use it in produc
 - code of experimental quality!
 - ChatGPT often generates misleading comments which could confuse your contributors and that's
 one reason against using this action in production.
+- Sometimes you will get 403 errors when the generated prompt is too long or considered an attack(perhaps?). 
+  - Separating the prompt and let ChatGPT comment on every single file should resolve this issue.
 
 ## Showcase
 
