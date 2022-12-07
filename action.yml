@@ -1,12 +1,16 @@
 name: 'Wait'
 description: 'Wait a designated number of milliseconds'
 inputs:
-  pr:  # id of input
-    description: 'ID of Pull Request'
+  number:  # id of input
+    description: 'ID of Pull Request or Issue'
     required: true
   sessionToken:
     description: 'Your ChatGPT session token.'
     required: true
+  mode:
+    description: 'Mode'
+    required: true
+    default: 'review'
 outputs:
   comment:
     description: 'The comment from chatgpt.'
