@@ -25,7 +25,9 @@
   },
   "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
-    "@actions/core": "^1.10.0"
+    "@actions/core": "^1.10.0",
+    "@octokit/action": "^4.0.10",
+    "chatgpt": "^2.0.1"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.31.1",

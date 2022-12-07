@@ -1,18 +1,48 @@
-const core = require('@actions/core');
-const wait = require('./wait');
+const core = require("@actions/core");
+const wait = require("./wait");
+const { Octokit } = require("@octokit/action");
 
+const octokit = new Octokit();
+
+async function createChatGPTAPI(sessionToken) {
+  // To use ESM in CommonJS, you can use a dynamic import
+  const { ChatGPTAPI } = await import("chatgpt");
+
+  const api = new ChatGPTAPI({ sessionToken });
+
+  // ensure the API is properly authenticated
+  await api.ensureAuth();
+
+  return api;
+}
+
+async function callChatGPT(api, content) {
+  const response = await api.sendMessage(content);
+  return response;
+}
 
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const ms = core.getInput('milliseconds');
-    core.info(`Waiting ${ms} milliseconds ...`);
+    const pr = parseInt(core.getInput("pr"));
+    const sessionToken = core.getInput("sessionToken");
 
-    core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
-    await wait(parseInt(ms));
-    core.info((new Date()).toTimeString());
+    // Read PR title and body
+    const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
+    const {
+      data: { title, body },
+    } = await octokit.pulls.get({
+      owner,
+      repo,
+      pull_number: pr,
+    });
+    core.info(`title: ${title}`);
+    core.info(`body:  ${body}`);
+    // Create ChatGPT API
+    const api = await createChatGPTAPI(sessionToken);
 
-    core.setOutput('time', new Date().toTimeString());
+    const response = await callChatGPT(api, "Hi, can you hear me?");
+    core.setOutput("comment", response);
   } catch (error) {
     core.setFailed(error.message);
   }

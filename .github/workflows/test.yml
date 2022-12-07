@@ -1,25 +1,21 @@
-name: "units-test"
-on:
-  pull_request:
-  push:
-    branches:
-      - main
-      - 'releases/*'
+on: [pull_request]
 
 jobs:
-  # unit tests
-  units:
+  chatgpt_comment:
     runs-on: ubuntu-latest
+    name: Let chatgpt comment on your PR.
     steps:
-    - uses: actions/checkout@v3
-    - run: npm ci
-    - run: npm test
+      # To use this repository's private action,
+      # you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: ChatGPT comment
+        uses: ./ # Uses an action in the root directory
+        id: hello
+        with:
+          pr: ${{ github.event.pull_request.number }}
+          sessionToken: ${{ secrets.CHATGPT_SESSION_TOKEN }}
+      # Use the output from the `hello` step
+      - name: Get the output time
+        run: echo "The time was ${{ steps.hello.outputs.time }}"
 
-  # test action works running from the graph
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: ./
-      with:
-        milliseconds: 1000

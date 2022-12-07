@@ -1,13 +1,15 @@
 name: 'Wait'
 description: 'Wait a designated number of milliseconds'
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  pr:  # id of input
+    description: 'ID of Pull Request'
     required: true
-    default: '1000'
+  sessionToken:
+    description: 'Your ChatGPT session token.'
+    required: true
 outputs:
-  time: # output will be available to future steps
-    description: 'The current time after waiting'
+  comment:
+    description: 'The comment from chatgpt.'
 runs:
   using: 'node16'
   main: 'dist/index.js'
