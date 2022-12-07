@@ -19,7 +19,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: ChatGPT comment
-        uses: ./ # Uses an action in the root directory
+        uses: kxxt/chatgpt-action
         id: chatgpt
         with:
           number: ${{ github.event.pull_request.number }}
