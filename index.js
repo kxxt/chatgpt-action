@@ -28,8 +28,12 @@ body: ${body}
 changes: `;
 }
 
-function genReviewPRPrompt(diff) {
-  return `Can you tell me the problems with the following patch and your suggestions?\n${diff}`
+function genReviewPRPrompt(title, body, diff) {
+  return `Can you tell me the problems with the following pull request and your suggestions?
+title: ${title}
+body: ${body}
+The following diff is the changes made in this PR.
+${diff}`;
 }
 
 // most @actions toolkit packages have async methods
@@ -69,7 +73,7 @@ async function run() {
         repo,
         pull_number: number,
         mediaType: {
-          format: "patch",
+          format: "diff",
         },
       });
       core.info(diff);
