@@ -1,7 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
-const { Octokit } = require("@octokit/action");
-const octokit = new Octokit();
+
 const { createChatGPTAPI } = require("./chatgpt");
 const { runPRReview } = require("./run");
 
@@ -20,7 +19,7 @@ async function run() {
     const api = await createChatGPTAPI(sessionToken);
 
     if (mode == "pr") {
-      runPRReview({ octokit, api, owner, repo, number, context });
+      runPRReview({ api, owner, repo, number, context });
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {
