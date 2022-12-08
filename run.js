@@ -38,7 +38,8 @@ async function runPRReview({ api, repo, owner, number, split }) {
     );
     const conversation = startConversation(api, 5);
     let cnt = 0;
-    const prompts = welcomePrompts.concat(diffPrompts).concat(endPrompt);
+    const prompts = welcomePrompts.concat(diffPrompts);
+    prompts.push(endPrompt);
     for (const prompt of prompts) {
       core.info(`Sending ${prompt}`);
       const response = await conversation.sendMessage(prompt);
