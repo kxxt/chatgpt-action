@@ -1,7 +1,7 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: 'ChatGPT Integration'
+description: 'This action integrates ChatGPT into your CI.'
 inputs:
-  number:  # id of input
+  number:
     description: 'ID of Pull Request or Issue'
     required: true
   sessionToken:
