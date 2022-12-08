@@ -21,13 +21,6 @@ async function callChatGPT(api, content) {
   return response;
 }
 
-function genCommentPRPrompt(title, body) {
-  return `Here is a pull request, please comment:\n
-title: ${title}
-body: ${body}
-changes: `;
-}
-
 function genReviewPRPrompt(title, body, diff) {
   const prompt = `Can you tell me the problems with the following pull request and describe your suggestions? 
 title: ${title}
@@ -38,7 +31,7 @@ ${diff}`;
 }
 
 // most @actions toolkit packages have async methods
-async function run() {
+function run() {
   try {
     const context = github.context;
     const number = parseInt(core.getInput("number"));
@@ -54,12 +47,12 @@ async function run() {
     if (mode == "pr") {
       const {
         data: { title, body },
-      } = await octokit.pulls.get({
+      } = await octokit.pull.get({
         owner,
         repo,
         pull_number: number,
       });
-      const { data: diff } = await octokit.rest.pulls.get({
+      const { data: diff } = await octokit.rest.pull.get({
         owner,
         repo,
         pull_number: number,
