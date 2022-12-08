@@ -1,7 +1,7 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const { Octokit } = require("@octokit/action");
-
+const util = require('util');
 const octokit = new Octokit();
 
 async function createChatGPTAPI(sessionToken) {
@@ -77,7 +77,7 @@ async function run() {
           body: response,
         });
       } catch(error) {
-        core.setFailed(JSON.stringify(error))
+        core.setFailed(util.inspect(error))
       }
       
       
