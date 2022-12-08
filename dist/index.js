@@ -13596,7 +13596,7 @@ function genReviewPRSplitedPrompt(title, body, diff, limit) {
 
   return {
     welcomePrompts: [
-      `Here is a pull request. Please assume you are a reviewer of this PR. First I will tell you the title and body of the PR. Please reply 'Completed' if you have done reading.
+      `Here is a pull request. Please assume you are a reviewer of this PR. First I will tell you the title and body of the PR. Please greet the PR author if you have done reading.
 The title is ${title}
 The remaining part is the body.
 ${body}`,
@@ -13604,7 +13604,7 @@ ${body}`,
 When a diff is too large, I will omit it and tell you about that.`,
     ],
     diffPrompts: splits,
-    endPrompt: `Based on your existing knowledge, can you tell me the problems with the above pull request and your suggestions?`,
+    endPrompt: `Based on your existing knowledge, can you tell me the problems with the above pull request and your suggestions for this PR?`,
   };
 }
 
