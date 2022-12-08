@@ -18,6 +18,10 @@ async function createChatGPTAPI(sessionToken) {
   return api;
 }
 
+function is503or504Error(err) {
+  return err.message.includes("503") || err.message.includes("504");
+}
+
 async function callChatGPT(api, content, retryOn503) {
   let cnt = 0;
   while (cnt++ <= retryOn503) {
@@ -25,7 +29,7 @@ async function callChatGPT(api, content, retryOn503) {
       const response = await api.sendMessage(content);
       return response;
     } catch (err) {
-      if (!err.message.includes("503")) throw err;
+      if (!is503or504Error(err)) throw err;
     }
   }
 }
@@ -42,9 +46,8 @@ function startConversation(api, retryOn503) {
           const response = await conversation.sendMessage(message);
           return response;
         } catch (err) {
-          core.warning(toString(err));
-          if (!err.message.includes("503")) throw err;
-          core.warning("Got 503, sleep for 10s now!");
+          if (!is503or504Error(err)) throw err;
+          core.warning(`Got "${err}", sleep for 10s now!`);
           await new Promise((r) => setTimeout(r, 10000));
         }
       }
