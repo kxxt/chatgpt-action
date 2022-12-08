@@ -44,7 +44,7 @@ async function runPRReview({ api, repo, owner, number, split }) {
       core.info(`Sending ${prompt}`);
       const response = await conversation.sendMessage(prompt);
       core.info(`Received ${response}`);
-      reply += `**ChatGPT#${++cnt}**: ${response}\n`;
+      reply += `**ChatGPT#${++cnt}**: ${response}\n\n`;
       // Wait for 10s
       await new Promise((r) => setTimeout(r, 10000));
     }
