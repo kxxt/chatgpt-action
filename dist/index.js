@@ -42,8 +42,8 @@ function startConversation(api, retryOn503) {
           const response = await conversation.sendMessage(message);
           return response;
         } catch (err) {
-          if (!toString(err).includes("503")) throw err;
           core.warning("Got 503, sleep for 10s now!");
+          if (!toString(err).includes("503")) throw err;
           await new Promise((r) => setTimeout(r, 10000));
         }
       }
@@ -13658,7 +13658,8 @@ async function runPRReview({ api, repo, owner, number, split }) {
     );
     const conversation = startConversation(api, 5);
     let cnt = 0;
-    const prompts = welcomePrompts.concat(diffPrompts).concat(endPrompt);
+    const prompts = welcomePrompts.concat(diffPrompts);
+    prompts.push(endPrompt);
     for (const prompt of prompts) {
       core.info(`Sending ${prompt}`);
       const response = await conversation.sendMessage(prompt);
