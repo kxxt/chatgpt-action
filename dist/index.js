@@ -13649,6 +13649,7 @@ async function runPRReview({ api, repo, owner, number, split }) {
     const response = await callChatGPT(api, prompt, 5);
     reply = response;
   } else {
+    reply = "";
     const { welcomePrompts, diffPrompts, endPrompt } = genReviewPRSplitedPrompt(
       title,
       body,
@@ -13664,7 +13665,7 @@ async function runPRReview({ api, repo, owner, number, split }) {
       core.info(`Received ${response}`);
       reply += `**ChatGPT#${++cnt}**: ${response}\n`;
       // Wait for 10s
-      await new Promise(r => setTimeout(r, 10000));
+      await new Promise((r) => setTimeout(r, 10000));
     }
   }
   await octokit.issues.createComment({
