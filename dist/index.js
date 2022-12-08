@@ -1,6 +1,38 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 4835:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+async function createChatGPTAPI(sessionToken) {
+  // To use ESM in CommonJS, you can use a dynamic import
+  const { ChatGPTAPI } = await __nccwpck_require__.e(/* import() */ 298).then(__nccwpck_require__.bind(__nccwpck_require__, 3298));
+
+  const api = new ChatGPTAPI({ sessionToken });
+
+  // ensure the API is properly authenticated
+  await api.ensureAuth();
+
+  return api;
+}
+
+async function callChatGPT(api, content, retryOn503) {
+  let cnt = 0;
+  while (cnt++ <= retryOn503) {
+    try {
+      const response = await api.sendMessage(content);
+      return response;
+    } catch (err) {
+      if (!toString(err).includes("503")) throw err;
+    }
+  }
+}
+
+module.exports = { createChatGPTAPI, callChatGPT };
+
+
+/***/ }),
+
 /***/ 7351:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -13509,6 +13541,61 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 2814:
+/***/ ((module) => {
+
+function genReviewPRPrompt(title, body, diff) {
+  const prompt = `Can you tell me the problems with the following pull request and describe your suggestions? 
+  title: ${title}
+  body: ${body}
+  The following diff is the changes made in this PR.
+  ${diff}`;
+  return prompt;
+}
+
+module.exports = { genReviewPRPrompt };
+
+
+/***/ }),
+
+/***/ 1499:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+const { genReviewPRPrompt } = __nccwpck_require__(2814);
+const { callChatGPT } = __nccwpck_require__(4835);
+
+async function runPRReview({ octokit, api, repo, owner, number, context }) {
+  const {
+    data: { title, body },
+  } = await octokit.pulls.get({
+    owner,
+    repo,
+    pull_number: number,
+  });
+  const { data: diff } = await octokit.rest.pulls.get({
+    owner,
+    repo,
+    pull_number: number,
+    mediaType: {
+      format: "diff",
+    },
+  });
+  const prompt = genReviewPRPrompt(title, body, diff);
+  core.info(`The prompt is: ${prompt}`);
+  const response = await callChatGPT(api, prompt, 5);
+  await octokit.issues.createComment({
+    ...context.repo,
+    issue_number: number,
+    body: response,
+  });
+}
+
+module.exports = { runPRReview };
+
+
+/***/ }),
+
 /***/ 2877:
 /***/ ((module) => {
 
@@ -13887,46 +13974,8 @@ const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const { Octokit } = __nccwpck_require__(1231);
 const octokit = new Octokit();
-
-async function createChatGPTAPI(sessionToken) {
-  // To use ESM in CommonJS, you can use a dynamic import
-  const { ChatGPTAPI } = await __nccwpck_require__.e(/* import() */ 298).then(__nccwpck_require__.bind(__nccwpck_require__, 3298));
-
-  const api = new ChatGPTAPI({ sessionToken });
-
-  // ensure the API is properly authenticated
-  await api.ensureAuth();
-
-  return api;
-}
-
-async function callChatGPT(api, content, retryOn503) {
-  let cnt = 0;
-  while (cnt++ <= retryOn503) {
-    try {
-      const response = await api.sendMessage(content);
-      return response;
-    } catch (err) {
-      if (!toString(err).includes("503")) throw err;
-    }
-  }
-}
-
-function genCommentPRPrompt(title, body) {
-  return `Here is a pull request, please comment:\n
-title: ${title}
-body: ${body}
-changes: `;
-}
-
-function genReviewPRPrompt(title, body, diff) {
-  const prompt = `Can you tell me the problems with the following pull request and describe your suggestions? 
-title: ${title}
-body: ${body}
-The following diff is the changes made in this PR.
-${diff}`;
-  return prompt;
-}
+const { createChatGPTAPI } = __nccwpck_require__(4835);
+const { runPRReview } = __nccwpck_require__(1499);
 
 // most @actions toolkit packages have async methods
 async function run() {
@@ -13943,29 +13992,7 @@ async function run() {
     const api = await createChatGPTAPI(sessionToken);
 
     if (mode == "pr") {
-      const {
-        data: { title, body },
-      } = await octokit.pulls.get({
-        owner,
-        repo,
-        pull_number: number,
-      });
-      const { data: diff } = await octokit.rest.pulls.get({
-        owner,
-        repo,
-        pull_number: number,
-        mediaType: {
-          format: "diff",
-        },
-      });
-      const prompt = genReviewPRPrompt(title, body, diff);
-      core.info(`The prompt is: ${prompt}`);
-      const response = await callChatGPT(api, prompt, 5);
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: number,
-        body: response,
-      });
+      runPRReview({ octokit, api, owner, repo, number, context });
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {
