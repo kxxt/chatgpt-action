@@ -30,14 +30,11 @@ function genReviewPRSplitedPrompt(title, body, diff, limit) {
 The title is ${title}
 The remaining part is the body.
 ${body}`,
-      `Now I will give you the changes made in this PR.
-Please note that the changes are in diff format and I will give you the diff one file at a time.
-When a diff is too large, I will omit it and tell you about that.
-Reply 'Completed' when you have done processing.`,
+      `Now I will give you the changes made in this PR one file at a time.
+When a diff is too large, I will omit it and tell you about that.`,
     ],
     diffPrompts: diff,
-    endPrompt: `Now you have read the complete pull request(title, body and diffs).
-Based on your existing knowledge, can you tell me the problems with the pull request and describe your suggestions?`,
+    endPrompt: `Can you tell me the problems with the above pull request and describe your suggestions?`,
   };
 }
 
