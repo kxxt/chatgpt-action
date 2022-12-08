@@ -36,8 +36,8 @@ function startConversation(api, retryOn503) {
           const response = await conversation.sendMessage(message);
           return response;
         } catch (err) {
-          if (!toString(err).includes("503")) throw err;
           core.warning("Got 503, sleep for 10s now!");
+          if (!toString(err).includes("503")) throw err;
           await new Promise((r) => setTimeout(r, 10000));
         }
       }
