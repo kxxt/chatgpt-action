@@ -15,13 +15,13 @@ one reason against using this action in production.
 - When you have too many changed files, ChatGPT will produce very bad results. Here is an example: https://github.com/LearningOS/lab5-os8-kxxt/pull/1
 ## Showcase
 
-### YOLO Mode
+### YOLO Mode: Give all the info to ChatGPT in one go
 
 - https://github.com/kxxt/chatgpt-action/pull/12
 - https://github.com/kxxt/chatgpt-action/pull/10
 - https://github.com/kxxt/chatgpt-action/pull/9
 
-### With Unstable Split feature on
+### Using Unstable Split Feature
 
 - https://github.com/kxxt/chatgpt-action/pull/20
 - https://github.com/kxxt/chatgpt-action/pull/22
