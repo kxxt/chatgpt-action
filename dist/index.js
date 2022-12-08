@@ -13886,7 +13886,7 @@ var __webpack_exports__ = {};
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
 const { Octokit } = __nccwpck_require__(1231);
-
+const util = __nccwpck_require__(1669);
 const octokit = new Octokit();
 
 async function createChatGPTAPI(sessionToken) {
@@ -13962,7 +13962,7 @@ async function run() {
           body: response,
         });
       } catch(error) {
-        core.setFailed(JSON.stringify(error))
+        core.setFailed(util.inspect(error))
       }
       
       
