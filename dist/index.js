@@ -13603,7 +13603,7 @@ ${body}`,
       `Now I will give you the changes made in this PR one file at a time.
 When a diff is too large, I will omit it and tell you about that.`,
     ],
-    diffPrompts: diff,
+    diffPrompts: splits,
     endPrompt: `Can you tell me the problems with the above pull request and describe your suggestions?`,
   };
 }
