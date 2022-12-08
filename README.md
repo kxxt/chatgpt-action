@@ -32,11 +32,12 @@ jobs:
     name: Let chatgpt comment on your PR.
     steps:
       - name: ChatGPT comment
-        uses: kxxt/chatgpt-action@HEAD
+        uses: kxxt/chatgpt-action@v0.1
         id: chatgpt
         with:
           number: ${{ github.event.pull_request.number }}
           sessionToken: ${{ secrets.CHATGPT_SESSION_TOKEN }}
+          split: 'yolo'  # Use true to enable the unstable split feature.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
