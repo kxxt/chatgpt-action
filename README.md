@@ -14,10 +14,16 @@ one reason against using this action in production.
 
 ## Showcase
 
+### YOLO Mode
+
 - https://github.com/kxxt/chatgpt-action/pull/12
 - https://github.com/kxxt/chatgpt-action/pull/10
 - https://github.com/kxxt/chatgpt-action/pull/9
-- Split feature: https://github.com/kxxt/chatgpt-action/pull/20
+
+### With Unstable Split feature on
+
+- https://github.com/kxxt/chatgpt-action/pull/20
+- https://github.com/kxxt/chatgpt-action/pull/22
 
 ## Usage
 
@@ -32,7 +38,7 @@ jobs:
     name: Let chatgpt comment on your PR.
     steps:
       - name: ChatGPT comment
-        uses: kxxt/chatgpt-action@v0.1
+        uses: kxxt/chatgpt-action@v0.2
         id: chatgpt
         with:
           number: ${{ github.event.pull_request.number }}
