@@ -40,7 +40,7 @@ async function runPRReview({ api, repo, owner, number, split }) {
     const prompts = welcomePrompts.concat(diffPrompts).concat(endPrompt);
     for (const prompt of prompts) {
       core.info(`Sending ${prompt}`);
-      const response = (await conversation).sendMessage(prompt);
+      const response = await conversation.sendMessage(prompt);
       core.info(`Received ${response}`);
       reply += `**ChatGPT#${++cnt}**: ${response}\n`;
     }
