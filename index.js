@@ -27,13 +27,6 @@ async function callChatGPT(api, content, retryOn503) {
   }
 }
 
-function genCommentPRPrompt(title, body) {
-  return `Here is a pull request, please comment:\n
-title: ${title}
-body: ${body}
-changes: `;
-}
-
 function genReviewPRPrompt(title, body, diff) {
   const prompt = `Can you tell me the problems with the following pull request and describe your suggestions? 
 title: ${title}
