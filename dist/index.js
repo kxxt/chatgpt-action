@@ -13584,7 +13584,7 @@ function genReviewPRSplitedPrompt(title, body, diff, limit) {
           const header = diff.split("\n", 1)[0];
           const info = "This diff is too large so I omitted it for you.";
           splits.push(`${header}\n${info}`);
-        } else splits.push();
+        } else splits.push(dif);
       }
       return cur;
     });
