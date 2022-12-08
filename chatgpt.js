@@ -19,7 +19,7 @@ async function callChatGPT(api, content, retryOn503) {
       const response = await api.sendMessage(content);
       return response;
     } catch (err) {
-      if (!toString(err).includes("503")) throw err;
+      if (!err.message.includes("503")) throw err;
     }
   }
 }
@@ -37,7 +37,7 @@ function startConversation(api, retryOn503) {
           return response;
         } catch (err) {
           core.warning(toString(err));
-          if (!toString(err).includes("503")) throw err;
+          if (!err.message.includes("503")) throw err;
           core.warning("Got 503, sleep for 10s now!");
           await new Promise((r) => setTimeout(r, 10000));
         }
