@@ -4,6 +4,8 @@ require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /***/ 4835:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
+const core = __nccwpck_require__(2186);
+
 async function createChatGPTAPI(sessionToken) {
   // To use ESM in CommonJS, you can use a dynamic import
   const { ChatGPTAPI } = await __nccwpck_require__.e(/* import() */ 298).then(__nccwpck_require__.bind(__nccwpck_require__, 3298));
@@ -41,6 +43,8 @@ function startConversation(api, retryOn503) {
           return response;
         } catch (err) {
           if (!toString(err).includes("503")) throw err;
+          core.warning("Got 503, sleep for 10s now!");
+          await new Promise((r) => setTimeout(r, 10000));
         }
       }
     },

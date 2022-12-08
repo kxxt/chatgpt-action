@@ -1,3 +1,5 @@
+const core = require("@actions/core");
+
 async function createChatGPTAPI(sessionToken) {
   // To use ESM in CommonJS, you can use a dynamic import
   const { ChatGPTAPI } = await import("chatgpt");
@@ -35,6 +37,8 @@ function startConversation(api, retryOn503) {
           return response;
         } catch (err) {
           if (!toString(err).includes("503")) throw err;
+          core.warning("Got 503, sleep for 10s now!");
+          await new Promise((r) => setTimeout(r, 10000));
         }
       }
     },
