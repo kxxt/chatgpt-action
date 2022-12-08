@@ -13564,8 +13564,10 @@ module.exports = { genReviewPRPrompt };
 const core = __nccwpck_require__(2186);
 const { genReviewPRPrompt } = __nccwpck_require__(2814);
 const { callChatGPT } = __nccwpck_require__(4835);
+const { Octokit } = __nccwpck_require__(1231);
+const octokit = new Octokit();
 
-async function runPRReview({ octokit, api, repo, owner, number, context }) {
+async function runPRReview({ api, repo, owner, number, context }) {
   const {
     data: { title, body },
   } = await octokit.pulls.get({
@@ -13972,8 +13974,7 @@ var __webpack_exports__ = {};
 (() => {
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
-const { Octokit } = __nccwpck_require__(1231);
-const octokit = new Octokit();
+
 const { createChatGPTAPI } = __nccwpck_require__(4835);
 const { runPRReview } = __nccwpck_require__(1499);
 
@@ -13992,7 +13993,7 @@ async function run() {
     const api = await createChatGPTAPI(sessionToken);
 
     if (mode == "pr") {
-      runPRReview({ octokit, api, owner, repo, number, context });
+      runPRReview({ api, owner, repo, number, context });
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {
