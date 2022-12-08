@@ -1,8 +1,10 @@
 const core = require("@actions/core");
 const { genReviewPRPrompt } = require("./prompt");
 const { callChatGPT } = require("./chatgpt");
+const { Octokit } = require("@octokit/action");
+const octokit = new Octokit();
 
-async function runPRReview({ octokit, api, repo, owner, number, context }) {
+async function runPRReview({ api, repo, owner, number, context }) {
   const {
     data: { title, body },
   } = await octokit.pulls.get({
