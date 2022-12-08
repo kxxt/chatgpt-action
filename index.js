@@ -2,39 +2,8 @@ const core = require("@actions/core");
 const github = require("@actions/github");
 const { Octokit } = require("@octokit/action");
 const octokit = new Octokit();
-
-async function createChatGPTAPI(sessionToken) {
-  // To use ESM in CommonJS, you can use a dynamic import
-  const { ChatGPTAPI } = await import("chatgpt");
-
-  const api = new ChatGPTAPI({ sessionToken });
-
-  // ensure the API is properly authenticated
-  await api.ensureAuth();
-
-  return api;
-}
-
-async function callChatGPT(api, content, retryOn503) {
-  let cnt = 0;
-  while (cnt++ <= retryOn503) {
-    try {
-      const response = await api.sendMessage(content);
-      return response;
-    } catch (err) {
-      if (!toString(err).includes("503")) throw err;
-    }
-  }
-}
-
-function genReviewPRPrompt(title, body, diff) {
-  const prompt = `Can you tell me the problems with the following pull request and describe your suggestions? 
-title: ${title}
-body: ${body}
-The following diff is the changes made in this PR.
-${diff}`;
-  return prompt;
-}
+const { createChatGPTAPI } = require("./chatgpt");
+const { runPRReview } = require("./run");
 
 // most @actions toolkit packages have async methods
 async function run() {
@@ -51,29 +20,7 @@ async function run() {
     const api = await createChatGPTAPI(sessionToken);
 
     if (mode == "pr") {
-      const {
-        data: { title, body },
-      } = await octokit.pulls.get({
-        owner,
-        repo,
-        pull_number: number,
-      });
-      const { data: diff } = await octokit.rest.pulls.get({
-        owner,
-        repo,
-        pull_number: number,
-        mediaType: {
-          format: "diff",
-        },
-      });
-      const prompt = genReviewPRPrompt(title, body, diff);
-      core.info(`The prompt is: ${prompt}`);
-      const response = await callChatGPT(api, prompt, 5);
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: number,
-        body: response,
-      });
+      runPRReview({ octokit, api, owner, repo, number, context });
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {
