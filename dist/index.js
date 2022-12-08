@@ -28,7 +28,7 @@ async function callChatGPT(api, content, retryOn503) {
   }
 }
 
-async function startConversation(api, retryOn503) {
+function startConversation(api, retryOn503) {
   const conversation = api.getConversation();
   return {
     conversation,
