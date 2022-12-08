@@ -1,23 +1,27 @@
-name: 'ChatGPT Integration'
-description: 'This action integrates ChatGPT into your CI.'
+name: "ChatGPT Integration"
+description: "This action integrates ChatGPT into your CI."
+branding:
+  icon: activity
+  color: green
+
 inputs:
   number:
-    description: 'ID of Pull Request or Issue'
+    description: "ID of Pull Request or Issue"
     required: true
   sessionToken:
-    description: 'Your ChatGPT session token.'
+    description: "Your ChatGPT session token."
     required: true
   mode:
-    description: 'Mode'
+    description: "Mode"
     required: true
-    default: 'pr'
+    default: "pr"
   split:
-    description: 'Should I split the prompt and how to split it?'
+    description: "Should I split the prompt and how to split it?"
     required: true
-    default: 'yolo'
+    default: "yolo"
 outputs:
   comment:
-    description: 'The comment from chatgpt.'
+    description: "The comment from chatgpt."
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: "node16"
+  main: "dist/index.js"
