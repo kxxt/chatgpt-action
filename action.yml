@@ -11,6 +11,10 @@ inputs:
     description: 'Mode'
     required: true
     default: 'pr'
+  split:
+    description: 'Should I split the prompt and how to split it?'
+    required: true
+    default: 'yolo'
 outputs:
   comment:
     description: 'The comment from chatgpt.'

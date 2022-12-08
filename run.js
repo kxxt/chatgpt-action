@@ -6,7 +6,7 @@ const github = require("@actions/github");
 const octokit = new Octokit();
 const context = github.context;
 
-async function runPRReview({ api, repo, owner, number }) {
+async function runPRReview({ api, repo, owner, number, split }) {
   const {
     data: { title, body },
   } = await octokit.pulls.get({
@@ -22,13 +22,19 @@ async function runPRReview({ api, repo, owner, number }) {
       format: "diff",
     },
   });
-  const prompt = genReviewPRPrompt(title, body, diff);
-  core.info(`The prompt is: ${prompt}`);
-  const response = await callChatGPT(api, prompt, 5);
+  let reply;
+  if (split == "yolo") {
+    const prompt = genReviewPRPrompt(title, body, diff);
+    core.info(`The prompt is: ${prompt}`);
+    const response = await callChatGPT(api, prompt, 5);
+    reply = response;
+  } else {
+    reply = "";
+  }
   await octokit.issues.createComment({
     ...context.repo,
     issue_number: number,
-    body: response,
+    body: reply,
   });
 }
 
