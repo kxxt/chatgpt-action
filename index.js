@@ -1,7 +1,6 @@
 const core = require("@actions/core");
 const github = require("@actions/github");
 const { Octokit } = require("@octokit/action");
-const util = require('util');
 const octokit = new Octokit();
 
 async function createChatGPTAPI(sessionToken) {
@@ -16,9 +15,16 @@ async function createChatGPTAPI(sessionToken) {
   return api;
 }
 
-async function callChatGPT(api, content) {
-  const response = await api.sendMessage(content);
-  return response;
+async function callChatGPT(api, content, retryOn503) {
+  let cnt = 0;
+  while (cnt++ <= retryOn503) {
+    try {
+      const response = await api.sendMessage(content);
+      return response;
+    } catch (err) {
+      if (!toString(err).includes("503")) throw err;
+    }
+  }
 }
 
 function genCommentPRPrompt(title, body) {
@@ -69,18 +75,12 @@ async function run() {
       });
       const prompt = genReviewPRPrompt(title, body, diff);
       core.info(`The prompt is: ${prompt}`);
-      try {
-        const response = await callChatGPT(api, prompt);
-        await octokit.issues.createComment({
-          ...context.repo,
-          issue_number: number,
-          body: response,
-        });
-      } catch(error) {
-        core.setFailed(util.inspect(error))
-      }
-      
-      
+      const response = await callChatGPT(api, prompt, 5);
+      await octokit.issues.createComment({
+        ...context.repo,
+        issue_number: number,
+        body: response,
+      });
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {
