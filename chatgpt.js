@@ -22,4 +22,23 @@ async function callChatGPT(api, content, retryOn503) {
   }
 }
 
-module.exports = { createChatGPTAPI, callChatGPT };
+async function startConversation(api, retryOn503) {
+  const conversation = api.getConversation();
+  return {
+    conversation,
+    retryOn503,
+    async sendMessage(message) {
+      let cnt = 0;
+      while (cnt++ <= retryOn503) {
+        try {
+          const response = await conversation.sendMessage(message);
+          return response;
+        } catch (err) {
+          if (!toString(err).includes("503")) throw err;
+        }
+      }
+    },
+  };
+}
+
+module.exports = { createChatGPTAPI, callChatGPT, startConversation };

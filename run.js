@@ -1,6 +1,6 @@
 const core = require("@actions/core");
-const { genReviewPRPrompt } = require("./prompt");
-const { callChatGPT } = require("./chatgpt");
+const { genReviewPRPrompt, genReviewPRSplitedPrompt } = require("./prompt");
+const { callChatGPT, startConversation } = require("./chatgpt");
 const { Octokit } = require("@octokit/action");
 const github = require("@actions/github");
 const octokit = new Octokit();
@@ -29,7 +29,21 @@ async function runPRReview({ api, repo, owner, number, split }) {
     const response = await callChatGPT(api, prompt, 5);
     reply = response;
   } else {
-    reply = "";
+    const { welcomePrompts, diffPrompts, endPrompt } = genReviewPRSplitedPrompt(
+      title,
+      body,
+      diff,
+      65536
+    );
+    const conversation = startConversation(api, 5);
+    let cnt = 0;
+    const prompts = welcomePrompts.concat(diffPrompts).concat(endPrompt);
+    for (const prompt of prompts) {
+      core.info(`Sending ${prompt}`);
+      const response = (await conversation).sendMessage(prompt);
+      core.info(`Received ${response}`);
+      reply += `**ChatGPT#${++cnt}**: ${response}\n`;
+    }
   }
   await octokit.issues.createComment({
     ...context.repo,

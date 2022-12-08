@@ -28,7 +28,26 @@ async function callChatGPT(api, content, retryOn503) {
   }
 }
 
-module.exports = { createChatGPTAPI, callChatGPT };
+async function startConversation(api, retryOn503) {
+  const conversation = api.getConversation();
+  return {
+    conversation,
+    retryOn503,
+    async sendMessage(message) {
+      let cnt = 0;
+      while (cnt++ <= retryOn503) {
+        try {
+          const response = await conversation.sendMessage(message);
+          return response;
+        } catch (err) {
+          if (!toString(err).includes("503")) throw err;
+        }
+      }
+    },
+  };
+}
+
+module.exports = { createChatGPTAPI, callChatGPT, startConversation };
 
 
 /***/ }),
@@ -13553,7 +13572,41 @@ function genReviewPRPrompt(title, body, diff) {
   return prompt;
 }
 
-module.exports = { genReviewPRPrompt };
+function genReviewPRSplitedPrompt(title, body, diff, limit) {
+  let splits = [];
+  diff
+    .split(/(diff --git .+\n)/g)
+    .slice(1)
+    .reduce((prev, cur, i) => {
+      if (i % 2 == 1) {
+        let dif = prev + cur;
+        if (dif.length > limit) {
+          const header = diff.split("\n", 1)[0];
+          const info = "This diff is too large so I omitted it for you.";
+          splits.push(`${header}\n${info}`);
+        } else splits.push();
+      }
+      return cur;
+    });
+
+  return {
+    welcomePrompts: [
+      `Here is a pull request. First I will tell you the title and body of the PR. Please reply 'Completed' if you have done reading.
+The title is ${title}
+The remaining part is the body.
+${body}`,
+      `Now I will give you the changes made in this PR.
+Please note that the changes are in diff format and I will give you the diff one file at a time.
+When a diff is too large, I will omit it and tell you about that.
+Please reply 'Completed' if you have done reading. Do the same for the following diffs.`,
+    ],
+    diffPrompts: diff,
+    endPrompt: `Now you have read the complete pull request.
+Can you tell me the problems with the pull request and describe your suggestions?`,
+  };
+}
+
+module.exports = { genReviewPRPrompt, genReviewPRSplitedPrompt };
 
 
 /***/ }),
@@ -13562,12 +13615,14 @@ module.exports = { genReviewPRPrompt };
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const { genReviewPRPrompt } = __nccwpck_require__(2814);
-const { callChatGPT } = __nccwpck_require__(4835);
+const { genReviewPRPrompt, genReviewPRSplitedPrompt } = __nccwpck_require__(2814);
+const { callChatGPT, startConversation } = __nccwpck_require__(4835);
 const { Octokit } = __nccwpck_require__(1231);
+const github = __nccwpck_require__(5438);
 const octokit = new Octokit();
+const context = github.context;
 
-async function runPRReview({ api, repo, owner, number, context }) {
+async function runPRReview({ api, repo, owner, number, split }) {
   const {
     data: { title, body },
   } = await octokit.pulls.get({
@@ -13583,13 +13638,33 @@ async function runPRReview({ api, repo, owner, number, context }) {
       format: "diff",
     },
   });
-  const prompt = genReviewPRPrompt(title, body, diff);
-  core.info(`The prompt is: ${prompt}`);
-  const response = await callChatGPT(api, prompt, 5);
+  let reply;
+  if (split == "yolo") {
+    const prompt = genReviewPRPrompt(title, body, diff);
+    core.info(`The prompt is: ${prompt}`);
+    const response = await callChatGPT(api, prompt, 5);
+    reply = response;
+  } else {
+    const { welcomePrompts, diffPrompts, endPrompt } = genReviewPRSplitedPrompt(
+      title,
+      body,
+      diff,
+      65536
+    );
+    const conversation = startConversation(api, 5);
+    let cnt = 0;
+    const prompts = welcomePrompts.concat(diffPrompts).concat(endPrompt);
+    for (const prompt of prompts) {
+      core.info(`Sending ${prompt}`);
+      const response = (await conversation).sendMessage(prompt);
+      core.info(`Received ${response}`);
+      reply += `**ChatGPT#${++cnt}**: ${response}\n`;
+    }
+  }
   await octokit.issues.createComment({
     ...context.repo,
     issue_number: number,
-    body: response,
+    body: reply,
   });
 }
 
@@ -13973,7 +14048,6 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
 const core = __nccwpck_require__(2186);
-const github = __nccwpck_require__(5438);
 
 const { createChatGPTAPI } = __nccwpck_require__(4835);
 const { runPRReview } = __nccwpck_require__(1499);
@@ -13981,19 +14055,19 @@ const { runPRReview } = __nccwpck_require__(1499);
 // most @actions toolkit packages have async methods
 async function run() {
   try {
-    const context = github.context;
     const number = parseInt(core.getInput("number"));
     const sessionToken = core.getInput("sessionToken");
     const mode = core.getInput("mode");
+    const split = core.getInput("split");
 
-    // Read PR title and body
+    // Get current repo.
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
 
     // Create ChatGPT API
     const api = await createChatGPTAPI(sessionToken);
 
     if (mode == "pr") {
-      runPRReview({ api, owner, repo, number, context });
+      runPRReview({ api, owner, repo, number, split });
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {
