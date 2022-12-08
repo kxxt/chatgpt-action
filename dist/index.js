@@ -13954,12 +13954,18 @@ async function run() {
       });
       const prompt = genReviewPRPrompt(title, body, diff);
       core.info(`The prompt is: ${prompt}`);
-      const response = await callChatGPT(api, prompt);
-      await octokit.issues.createComment({
-        ...context.repo,
-        issue_number: number,
-        body: response,
-      });
+      try {
+        const response = await callChatGPT(api, prompt);
+        await octokit.issues.createComment({
+          ...context.repo,
+          issue_number: number,
+          body: response,
+        });
+      } catch(error) {
+        core.setFailed(JSON.stringify(error))
+      }
+      
+      
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {
