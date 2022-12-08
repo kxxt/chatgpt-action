@@ -34,7 +34,7 @@ ${body}`,
 When a diff is too large, I will omit it and tell you about that.`,
     ],
     diffPrompts: splits,
-    endPrompt: `Can you tell me the problems with the above pull request and describe your suggestions?`,
+    endPrompt: `Based on your existing knowledge, can you tell me the problems with the above pull request and describe your suggestions?`,
   };
 }
 
