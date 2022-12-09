@@ -10,9 +10,9 @@ Please note： this repo is a WIP and I do not recommend you to use it in produc
 - ChatGPT often generates misleading comments which could confuse your contributors and that's
 one reason against using this action in production.
 - Sometimes you will get 403 errors when the generated prompt is too long or considered an attack(perhaps?). 
-  - ~~Split the prompt and let ChatGPT comment on every single file should resolve this issue.~~ 
+  - ~~Split the prompt and let ChatGPT comment on every single file should resolve this issue most of the time.~~ 
   - This feature has been implemented but it is unstable. Add `split: true` to `with` node in your config to enable this feature.
-- When you have too many changed files, ChatGPT will produce very bad results. Here is an example: https://github.com/LearningOS/lab5-os8-kxxt/pull/1
+    - When you have too many changed files, ChatGPT will produce very bad results. Here is an example: https://github.com/LearningOS/lab5-os8-kxxt/pull/1
 ## Showcase
 
 ### YOLO Mode: Give all the info to ChatGPT in one go
