@@ -4,6 +4,8 @@ Let chatgpt review your PR.
 
 Please note： this repo is a WIP and I do not recommend you to use it in production!
 
+Another idea: Create a vscode extension that asks ChatGPT to refactor or point out the bugs of a selected range of code. I don't have time to learn vscode extension and implement it.
+
 ## Warning
 
 - code of experimental quality!
