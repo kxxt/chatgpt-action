@@ -39,7 +39,7 @@ jobs:
     name: Let chatgpt comment on your PR.
     steps:
       - name: ChatGPT comment
-        uses: kxxt/chatgpt-action@v0.2
+        uses: kxxt/chatgpt-action@v0.3
         id: chatgpt
         with:
           number: ${{ github.event.pull_request.number }}
