@@ -7,7 +7,7 @@ Please note： this repo is a WIP and I do not recommend you to use it in produc
 ## Ideas
 
 - Create a vscode extension that asks ChatGPT to refactor or point out the bugs of a selected range of code. I don't have time to learn vscode extension and implement it.
-- Idea: Implement ChatGPT's feedback as a commit or suggested change ([#27](https://github.com/kxxt/chatgpt-action/issues/27))
+- Implement ChatGPT's review feedback as a commit or suggested change ([#27](https://github.com/kxxt/chatgpt-action/issues/27))
 
 ## Warning
 
