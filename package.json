@@ -27,7 +27,7 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
-    "@octokit/action": "^4.0.10",
+    "@octokit/action": "^5.0.2",
     "chatgpt": "^2.0.1"
   },
   "devDependencies": {
