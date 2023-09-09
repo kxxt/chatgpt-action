@@ -10,6 +10,7 @@ async function run() {
     const sessionToken = core.getInput("sessionToken");
     const mode = core.getInput("mode");
     const split = core.getInput("split");
+    const lang = core.getInput("lang");
 
     // Get current repo.
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split("/");
@@ -18,7 +19,7 @@ async function run() {
     const api = await createChatGPTAPI(sessionToken);
 
     if (mode == "pr") {
-      runPRReview({ api, owner, repo, number, split });
+      runPRReview({ api, owner, repo, number, lang, split });
     } else if (mode == "issue") {
       throw "Not implemented!";
     } else {

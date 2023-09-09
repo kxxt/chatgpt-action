@@ -1,13 +1,19 @@
-function genReviewPRPrompt(title, body, diff) {
-  const prompt = `Can you tell me the problems with the following pull request and describe your suggestions? 
+function genReviewPRPrompt(title, body, lang, diff) {
+  const prompt = `Can you tell me the problems with the following pull request and describe your suggestions?
   title: ${title}
   body: ${body}
   The following diff is the changes made in this PR.
   ${diff}`;
+
+  if(lang.length > 0) {
+    // langで指定された言語でのプロンプトを生成する
+    return `{prompt}
+    Please write a review of the following pull request in ${lang}.`;
+  }
   return prompt;
 }
 
-function genReviewPRSplitedPrompt(title, body, diff, limit) {
+function genReviewPRSplitedPrompt(title, body, lang, diff, limit) {
   let splits = [];
   diff
     .split(/(diff --git .+\n)/g)

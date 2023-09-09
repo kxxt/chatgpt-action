@@ -6,7 +6,7 @@ const github = require("@actions/github");
 const octokit = new Octokit();
 const context = github.context;
 
-async function runPRReview({ api, repo, owner, number, split }) {
+async function runPRReview({ api, repo, owner, number, lang, split }) {
   const {
     data: { title, body },
   } = await octokit.pulls.get({
@@ -24,7 +24,7 @@ async function runPRReview({ api, repo, owner, number, split }) {
   });
   let reply;
   if (split == "yolo") {
-    const prompt = genReviewPRPrompt(title, body, diff);
+    const prompt = genReviewPRPrompt(title, body, lang, diff);
     core.info(`The prompt is: ${prompt}`);
     const response = await callChatGPT(api, prompt, 5);
     reply = response;
@@ -33,6 +33,7 @@ async function runPRReview({ api, repo, owner, number, split }) {
     const { welcomePrompts, diffPrompts, endPrompt } = genReviewPRSplitedPrompt(
       title,
       body,
+      lang,
       diff,
       65536
     );
